@@ -50,10 +50,15 @@ android {
 dependencies {
 
     implementation(project(":feature:login"))
+    implementation(project(":feature:signup"))
     implementation(project(":feature:signin"))
+    implementation(project(":feature:home"))
 
     implementation(project(":navigator:core"))
     implementation(project(":navigator:signin"))
+    implementation(project(":navigator:signup"))
+    implementation(project(":navigator:home"))
+
     implementation(project(":core-design"))
     implementation(project(":core-api"))
 
