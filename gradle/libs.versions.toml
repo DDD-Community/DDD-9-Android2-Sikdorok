@@ -2,6 +2,7 @@
 application = "8.0.2"
 kotlin-android = "1.8.20"
 androidCoreX = "1.8.0"
+androidFragmentX = "1.5.7"
 androidCompat = "1.4.1"
 androidViewModelX = "2.6.1"
 material = "1.5.0"
@@ -23,6 +24,8 @@ espresso = "3.5.1"
 androidCoreX = { group = "androidx.core", name="core-ktx", version.ref="androidCoreX" }
 androidCompat = { group = "androidx.appcompat", name="appcompat", version.ref="androidCompat" }
 androidConstraint = { group = "androidx.constraintlayout", name="constraintlayout", version.ref="androidConstraint" }
+viewmodel-ktx = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "androidViewModelX" }
+fragment-ktx = { group = "androidx.fragment", name = "fragment-ktx", version.ref = "androidFragmentX" }
 material = { group = "com.google.android.material", name="material", version.ref="material" }
 retrofit = { group = "com.squareup.retrofit2", name="retrofit", version.ref="retrofit" }
 http-logging = { group = "com.squareup.okhttp3", name="logging-interceptor", version.ref="logging-interceptor" }
