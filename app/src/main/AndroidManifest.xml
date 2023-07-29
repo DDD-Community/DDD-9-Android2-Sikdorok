@@ -31,6 +31,8 @@
 
         <activity android:name=".home.HomeActivity" />
 
+        <activity android:name=".signup.SignUpActivity" />
+
 
         <activity
             android:name="com.kakao.sdk.auth.AuthCodeHandlerActivity"
