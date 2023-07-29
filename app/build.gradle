@@ -55,6 +55,11 @@ dependencies {
     implementation(project(":navigator:core"))
     implementation(project(":navigator:signin"))
     implementation(project(":core-design"))
+    implementation(project(":core-api"))
+
+    implementation(project(":data"))
+    implementation(project(":shared"))
+    implementation(project(":domain"))
 
 
     implementation libs.androidCoreX
@@ -63,5 +68,7 @@ dependencies {
 
     implementation libs.kakao.login
     kapt libs.hilt.compiler
+
+    implementation libs.timber
 
 }
