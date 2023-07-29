@@ -4,6 +4,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -26,9 +27,20 @@ internal object NetworkModule {
 
     @Provides
     @Singleton
-    fun providesOkHttpClient() = OkHttpClient.Builder()
-        .addInterceptor(HttpLoggingInterceptor { log ->
-            Timber.i(log)
-        }.setLevel(HttpLoggingInterceptor.Level.BODY))
+    fun providesOkHttpClient(
+        interceptor: Interceptor
+    ) = OkHttpClient.Builder()
+        .addInterceptor(interceptor)
         .build()
+
+    @Provides
+    @Singleton
+    fun providesHttpLoggingInterceptor(): Interceptor {
+        val interceptor = HttpLoggingInterceptor {
+            Timber.i(it)
+        }
+
+        return interceptor.setLevel(HttpLoggingInterceptor.Level.BODY)
+    }
 }
+
