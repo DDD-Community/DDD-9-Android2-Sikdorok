@@ -1,6 +1,8 @@
 package com.ddd.sikdorok.di
 
+import com.ddd.sikdorok.find_password.FindPasswordNavigator
 import com.ddd.sikdorok.home.HomeNavigator
+import com.ddd.sikdorok.navigator.FindPasswordNavigatorImpl
 import com.ddd.sikdorok.navigator.HomeNavigatorImpl
 import com.ddd.sikdorok.navigator.SignInNavigatorImpl
 import com.ddd.sikdorok.navigator.SignUpNavigatorImpl
@@ -27,4 +29,8 @@ internal abstract class CoordinatorModule {
     @ActivityScoped
     @Binds
     abstract fun bindsHomeNavigator(navigator: HomeNavigatorImpl): HomeNavigator
+
+    @ActivityScoped
+    @Binds
+    abstract fun bindsFindPasswordNavigator(navigator: FindPasswordNavigatorImpl): FindPasswordNavigator
 }
