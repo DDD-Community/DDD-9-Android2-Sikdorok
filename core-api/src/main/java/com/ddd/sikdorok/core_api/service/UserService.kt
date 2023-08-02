@@ -3,7 +3,7 @@ package com.ddd.sikdorok.core_api.service
 import com.ddd.sikdorok.shared.base.SikdorokResponse
 import com.ddd.sikdorok.shared.login.Request
 import com.ddd.sikdorok.shared.login.Response
-import com.ddd.sikdorok.shared.sign.SignIn
+import com.ddd.sikdorok.shared.sign.SignUp as SikdorokSignUp
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
@@ -20,7 +20,7 @@ interface UserService {
 
     interface SignUp {
         @POST("/users/register")
-        suspend fun requestRegisterUser(body: SignIn.Request): SikdorokResponse<Response>
+        suspend fun requestRegisterUser(@Body body: SikdorokSignUp.Request): SikdorokResponse<Response>
     }
 
     interface EmailCheck {

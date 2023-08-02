@@ -29,6 +29,14 @@
 
         <activity android:name=".login.LoginActivity"/>
 
+        <activity android:name=".home.HomeActivity" />
+
+        <activity android:name=".signup.SignUpActivity" />
+
+        <activity
+            android:name=".find_password.FindPasswordActivity"
+            android:exported="false" />
+
 
         <activity
             android:name="com.kakao.sdk.auth.AuthCodeHandlerActivity"
