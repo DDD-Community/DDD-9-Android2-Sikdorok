@@ -1,11 +1,15 @@
 package com.ddd.sikdorok.find_password
 
-import androidx.appcompat.app.AppCompatActivity
-import android.os.Bundle
+import androidx.activity.viewModels
+import com.ddd.sikdorok.find_password.databinding.ActivityFindPasswordBinding
+import com.example.core_ui.base.BaseActivity
+import com.example.core_ui.base.BaseViewModel
 
-class FindPasswordActivity : AppCompatActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_find_password)
-    }
+class FindPasswordActivity : BaseActivity<ActivityFindPasswordBinding>(ActivityFindPasswordBinding::inflate) {
+
+    override val viewModel: BaseViewModel by viewModels()
+
+    override fun initLayout() {}
+
+    override fun setupCollect() {}
 }
