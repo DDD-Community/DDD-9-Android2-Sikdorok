@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace 'com.example.core_ui'
+    namespace 'com.ddd.sikdorok.core_ui'
     compileSdk 33
 
     defaultConfig {
@@ -36,11 +36,6 @@ android {
 }
 
 dependencies {
-
     implementation libs.androidCoreX
     implementation libs.androidCompat
-    implementation libs.material
-    testImplementation libs.junit
-    androidTestImplementation libs.junit.ext
-    androidTestImplementation libs.espresso
 }
