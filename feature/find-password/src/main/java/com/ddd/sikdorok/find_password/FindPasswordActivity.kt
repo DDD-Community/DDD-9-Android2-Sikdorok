@@ -8,7 +8,7 @@ import androidx.lifecycle.lifecycleScope
 import com.ddd.sikdorok.extensions.textChanges
 import com.ddd.sikdorok.find_password.databinding.ActivityFindPasswordBinding
 import com.ddd.sikdorok.send_password.SendPasswordNavigator
-import com.example.core_ui.base.BackFrameActivity
+import com.ddd.sikdorok.core_ui.base.BackFrameActivity
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.launchIn

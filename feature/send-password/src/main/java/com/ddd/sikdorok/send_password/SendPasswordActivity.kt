@@ -3,8 +3,8 @@ package com.ddd.sikdorok.send_password
 import android.widget.FrameLayout
 import androidx.activity.viewModels
 import com.ddd.sikdorok.send_password.databinding.ActivitySendPasswordBinding
-import com.example.core_ui.base.BackFrameActivity
-import com.example.core_ui.base.BaseViewModel
+import com.ddd.sikdorok.core_ui.base.BackFrameActivity
+import com.ddd.sikdorok.core_ui.base.BaseViewModel
 
 class SendPasswordActivity : BackFrameActivity<ActivitySendPasswordBinding>(ActivitySendPasswordBinding::inflate) {
 

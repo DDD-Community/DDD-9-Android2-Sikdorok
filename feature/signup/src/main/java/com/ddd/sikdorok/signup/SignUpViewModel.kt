@@ -6,8 +6,8 @@ import androidx.lifecycle.viewModelScope
 import com.ddd.sikdorok.domain.email.PostOnCheckEmailUseCase
 import com.ddd.sikdorok.domain.signup.PostSignUpUseCase
 import com.ddd.sikdorok.shared.sign.SignUp
-import com.example.core_ui.base.BaseContract
-import com.example.core_ui.base.BaseViewModel
+import com.ddd.sikdorok.core_ui.base.BaseContract
+import com.ddd.sikdorok.core_ui.base.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.flow.MutableSharedFlow
