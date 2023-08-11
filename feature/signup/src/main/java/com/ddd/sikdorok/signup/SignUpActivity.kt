@@ -1,13 +1,14 @@
 package com.ddd.sikdorok.signup
 
 import android.app.Activity
+import android.widget.FrameLayout
 import androidx.activity.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import com.ddd.sikdorok.extensions.textChanges
 import com.ddd.sikdorok.signup.databinding.ActivitySignUpBinding
-import com.example.core_ui.base.BaseActivity
+import com.example.core_ui.base.BackFrameActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.filter
@@ -15,10 +16,12 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
 @AndroidEntryPoint
-class SignUpActivity : BaseActivity<ActivitySignUpBinding>(ActivitySignUpBinding::inflate) {
+class SignUpActivity : BackFrameActivity<ActivitySignUpBinding>(ActivitySignUpBinding::inflate) {
 
-    override val viewModel: SignUpViewModel by viewModels()
     private val email by lazy { intent.extras?.getString(PAYLOAD) }
+    override val viewModel: SignUpViewModel by viewModels()
+    override val backFrame: FrameLayout by lazy { binding.frameClose }
+
 
     override fun initLayout() {
 
@@ -36,10 +39,10 @@ class SignUpActivity : BaseActivity<ActivitySignUpBinding>(ActivitySignUpBinding
                 binding.editPasswordCheck.text.toString()
             ))
         }
+    }
 
-        binding.frameClose.setOnClickListener {
-            viewModel.event(SignUpContract.Event.OnBackPressed)
-        }
+    override fun onClickBackFrameIcon() {
+        viewModel.event(SignUpContract.Event.OnBackPressed)
     }
 
     override fun setupCollect() {

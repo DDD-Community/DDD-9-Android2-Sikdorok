@@ -1,5 +1,6 @@
 package com.ddd.sikdorok.find_password
 
+import android.widget.FrameLayout
 import androidx.activity.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.flowWithLifecycle
@@ -7,8 +8,7 @@ import androidx.lifecycle.lifecycleScope
 import com.ddd.sikdorok.extensions.textChanges
 import com.ddd.sikdorok.find_password.databinding.ActivityFindPasswordBinding
 import com.ddd.sikdorok.send_password.SendPasswordNavigator
-import com.example.core_ui.base.BaseActivity
-import com.example.core_ui.base.BaseViewModel
+import com.example.core_ui.base.BackFrameActivity
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.launchIn
@@ -16,12 +16,13 @@ import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class FindPasswordActivity : BaseActivity<ActivityFindPasswordBinding>(ActivityFindPasswordBinding::inflate) {
+class FindPasswordActivity : BackFrameActivity<ActivityFindPasswordBinding>(ActivityFindPasswordBinding::inflate) {
 
     @Inject
     lateinit var sendPasswordNavigator: SendPasswordNavigator
 
     override val viewModel: FindPasswordViewModel by viewModels()
+    override val backFrame: FrameLayout by lazy { binding.frameBack }
 
     override fun initLayout() {
         binding.editEmail.textChanges()
@@ -35,12 +36,12 @@ class FindPasswordActivity : BaseActivity<ActivityFindPasswordBinding>(ActivityF
             viewModel.event(FindPasswordContract.Event.Submit(binding.editEmail.text.toString()))
         }
 
-        binding.frameBack.setOnClickListener {
-            viewModel.event(FindPasswordContract.Event.OnClickLeftIcon)
-        }
-
         binding.tvSubmit.isEnabled = false
         binding.tvSubmit.isSelected = false
+    }
+
+    override fun onClickBackFrameIcon() {
+        viewModel.event(FindPasswordContract.Event.OnClickLeftIcon)
     }
 
     override fun setupCollect() {
