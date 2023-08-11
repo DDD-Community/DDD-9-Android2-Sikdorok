@@ -1,4 +1,4 @@
-package com.example.core_ui.base
+package com.ddd.sikdorok.core_ui.base
 
 import android.os.Bundle
 import android.view.LayoutInflater

@@ -8,7 +8,7 @@ import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import com.ddd.sikdorok.extensions.textChanges
 import com.ddd.sikdorok.signup.databinding.ActivitySignUpBinding
-import com.example.core_ui.base.BackFrameActivity
+import com.ddd.sikdorok.core_ui.base.BackFrameActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.filter
