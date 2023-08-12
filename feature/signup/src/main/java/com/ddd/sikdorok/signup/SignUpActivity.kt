@@ -9,11 +9,14 @@ import androidx.lifecycle.lifecycleScope
 import com.ddd.sikdorok.extensions.textChanges
 import com.ddd.sikdorok.signup.databinding.ActivitySignUpBinding
 import com.ddd.sikdorok.core_ui.base.BackFrameActivity
+import com.ddd.sikdorok.extensions.showSnackBar
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import com.ddd.sikdorok.core_design.R as coreDesignR
 
 @AndroidEntryPoint
 class SignUpActivity : BackFrameActivity<ActivitySignUpBinding>(ActivitySignUpBinding::inflate) {
@@ -108,6 +111,15 @@ class SignUpActivity : BackFrameActivity<ActivitySignUpBinding>(ActivitySignUpBi
                     }
                     is SignUpContract.SideEffect.NaviToBack -> {
                         finish()
+                    }
+                    is SignUpContract.SideEffect.SnowSnackBar -> {
+                        showSnackBar(
+                            view = binding.tvSubmit,
+                            message = sideEffect.message,
+                            backgroundColor = coreDesignR.color.input_error,
+                            textColor = coreDesignR.color.white,
+                            duration = Snackbar.LENGTH_LONG
+                        )
                     }
                 }
             }

@@ -41,10 +41,10 @@ class LoginViewModel @Inject constructor(
                 is LoginContract.Event.CheckKakaoUser -> {
                     val result = postOnCheckUserUseCase.invoke(event.code)
 
-                    if(result.data.isRegistered) {
+                    if(result.data?.isRegistered == true) {
                         _effect.emit(LoginContract.SideEffect.NaviToHome)
                     } else {
-                        _effect.emit(LoginContract.SideEffect.NaviToSignUp(result.data.login.email))
+                        _effect.emit(LoginContract.SideEffect.NaviToSignUp(result.data?.login?.email))
                     }
                 }
             }
