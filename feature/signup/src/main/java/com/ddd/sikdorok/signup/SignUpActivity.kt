@@ -3,13 +3,13 @@ package com.ddd.sikdorok.signup
 import android.app.Activity
 import android.widget.FrameLayout
 import androidx.activity.viewModels
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import com.ddd.sikdorok.extensions.textChanges
 import com.ddd.sikdorok.signup.databinding.ActivitySignUpBinding
 import com.ddd.sikdorok.core_ui.base.BackFrameActivity
+import com.ddd.sikdorok.extensions.showSnackBar
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.debounce
@@ -113,12 +113,13 @@ class SignUpActivity : BackFrameActivity<ActivitySignUpBinding>(ActivitySignUpBi
                         finish()
                     }
                     is SignUpContract.SideEffect.SnowSnackBar -> {
-
-                        Snackbar.make(binding.tvSubmit, sideEffect.message, Snackbar.LENGTH_LONG)
-                            .setBackgroundTint(ContextCompat.getColor(this, coreDesignR.color.input_error))
-                            .setTextColor(ContextCompat.getColor(this, coreDesignR.color.white))
-                            .show()
-
+                        showSnackBar(
+                            view = binding.tvSubmit,
+                            message = sideEffect.message,
+                            backgroundColor = coreDesignR.color.input_error,
+                            textColor = coreDesignR.color.white,
+                            duration = Snackbar.LENGTH_LONG
+                        )
                     }
                 }
             }
