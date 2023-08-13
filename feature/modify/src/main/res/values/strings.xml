@@ -1,1 +1,3 @@
-<resources></resources>
+<resources>
+    <string name="modify_save">저장</string>
+</resources>

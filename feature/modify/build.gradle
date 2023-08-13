@@ -1,6 +1,8 @@
 plugins {
     alias(libs.plugins.library)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.kapt)
+    alias(libs.plugins.hilt.plugin)
 }
 
 android {
@@ -27,15 +29,22 @@ android {
     kotlinOptions {
         jvmTarget = '17'
     }
+    buildFeatures {
+        dataBinding true
+    }
 }
 
 dependencies {
     implementation(project(":core-ui"))
+    implementation(project(":core-design"))
 
-    implementation libs.androidCoreX
-    implementation libs.androidCompat
+    implementation libs.bundles.android
     implementation libs.material
-    implementation libs.androidConstraint
+    implementation libs.fragment.ktx
+
+    implementation libs.hilt.android
+    kapt libs.hilt.compiler
+
     testImplementation libs.junit
     androidTestImplementation libs.junit.ext
     androidTestImplementation libs.espresso
