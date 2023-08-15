@@ -11,11 +11,7 @@ class ModifyContract {
         val icon: String = "",
         val isMainPost: Boolean = false,
         val memo: String = ""
-    ) {
-        companion object {
-            val EMPTY = State()
-        }
-    }
+    )
 
     sealed class Event {
         object OnClickBackIcon : Event()
