@@ -34,12 +34,14 @@ android {
 }
 
 dependencies {
+    implementation(project(":core-design"))
+    implementation(project(":core-ui"))
+    implementation(project(":extensions"))
 
     implementation libs.bundles.android
     implementation libs.material
-    implementation 'androidx.appcompat:appcompat:1.6.1'
-    implementation 'com.google.android.material:material:1.5.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+
+    implementation libs.fragment.ktx
 
     testImplementation libs.junit
     androidTestImplementation libs.junit.ext
