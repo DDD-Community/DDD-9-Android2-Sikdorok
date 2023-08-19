@@ -40,6 +40,9 @@ dependencies {
     implementation(project(":core-ui"))
     implementation(project(":extensions"))
 
+    implementation(project(":navigator:core"))
+    implementation(project(":navigator:delete-account"))
+
     implementation libs.bundles.android
     implementation libs.material
 

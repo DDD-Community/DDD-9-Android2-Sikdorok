@@ -8,15 +8,20 @@ import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import com.ddd.sikdorok.core_ui.base.BaseActivity
 import com.ddd.sikdorok.extensions.getPackageInfoCompat
+import com.ddd.sikdorok.navigator.delete_account.DeleteAccountNavigator
 import com.ddd.sikdorok.settings.databinding.ActivitySettingBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class SettingActivity : BaseActivity<ActivitySettingBinding>(ActivitySettingBinding::inflate) {
 
     override val viewModel: SettingsViewModel by viewModels()
+
+    @Inject
+    lateinit var deleteAccountNavigator: DeleteAccountNavigator
 
     override fun initLayout() {
         binding.tvVersion.text = getString(R.string.settings_app_versions, packageManager.getPackageInfoCompat(packageName).versionName)
@@ -56,7 +61,7 @@ class SettingActivity : BaseActivity<ActivitySettingBinding>(ActivitySettingBind
                         startActivity(intent)
                     }
                     SettingsContract.SideEffect.NaviToDeleteAccount -> {
-
+                        startActivity(deleteAccountNavigator.start(this))
                     }
                 }
             }
