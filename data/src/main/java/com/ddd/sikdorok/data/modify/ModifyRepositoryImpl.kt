@@ -2,7 +2,7 @@ package com.ddd.sikdorok.data.modify
 
 import androidx.core.net.toUri
 import com.ddd.sikdorok.data.modify.data.ModifyRemoteDataSource
-import com.ddd.sikdorok.domain.modify.ModifyRepository
+import com.ddd.sikdorok.domain.repository.ModifyRepository
 import com.ddd.sikdorok.shared.base.SikdorokResponse
 import com.ddd.sikdorok.shared.modify.FeedRequest
 import dagger.Binds
