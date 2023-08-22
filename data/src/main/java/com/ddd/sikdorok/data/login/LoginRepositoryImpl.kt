@@ -42,6 +42,10 @@ internal class LoginRepositoryImpl constructor(
             }
         }
     }
+
+    override fun onGetSavedToken(key: String): String {
+        return sikdorokPreference.getString(key)
+    }
 }
 
 @Module

@@ -15,4 +15,6 @@ interface LoginRepository {
     suspend fun onSignUpUser(body: SignUp.Request): SikdorokResponse<Response>
 
     fun onPostSaveToken(type: TokenType, token: String): Result<Unit>
+
+    fun onGetSavedToken(key: String) : String
 }
