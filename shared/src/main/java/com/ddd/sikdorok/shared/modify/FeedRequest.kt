@@ -9,5 +9,5 @@ data class FeedRequest(
     val memo: String = "",
     val icon: Icon,
     val isMain: Boolean,
-    val deletePhotoTokens: List<String>? = null
+    val deletePhotoTokens: List<String> = emptyList()
 )
