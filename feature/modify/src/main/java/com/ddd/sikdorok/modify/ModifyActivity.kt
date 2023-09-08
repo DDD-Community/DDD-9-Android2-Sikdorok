@@ -1,7 +1,6 @@
 package com.ddd.sikdorok.modify
 
 import android.Manifest
-import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
@@ -9,11 +8,10 @@ import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
 import android.widget.FrameLayout
-import android.widget.RadioButton
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
-import androidx.core.view.get
+import androidx.annotation.IdRes
 import androidx.core.view.isVisible
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.flowWithLifecycle
@@ -22,6 +20,8 @@ import com.bumptech.glide.Glide
 import com.ddd.sikdorok.core_ui.base.BackFrameActivity
 import com.ddd.sikdorok.extensions.compressBitmap
 import com.ddd.sikdorok.modify.databinding.ActivityModifyBinding
+import com.ddd.sikdorok.shared.code.Icon
+import com.ddd.sikdorok.shared.code.Tag
 import com.ddd.sikdorok.shared.code.album
 import com.ddd.sikdorok.shared.code.camera
 import com.ddd.sikdorok.shared.date.DATE_PATTERNS
@@ -37,30 +37,32 @@ import org.joda.time.format.DateTimeFormat
 @AndroidEntryPoint
 class ModifyActivity : BackFrameActivity<ActivityModifyBinding>(ActivityModifyBinding::inflate) {
 
-    private val cameraLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        val bitmap = result.data?.extras?.getParcelable<Bitmap>("data") ?: return@registerForActivityResult
-        val data = Bitmap.createScaledBitmap(bitmap, bitmap.width, bitmap.height, false).copy(
-            Bitmap.Config.ARGB_8888, true
-        )
-        viewModel.event(
-            ModifyContract.Event.OnUpdateImage(
-                compressBitmap(Bitmap.CompressFormat.PNG, data, 100) ?: Uri.EMPTY
+    private val cameraLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            val bitmap = result.data?.extras?.getParcelable<Bitmap>("data")
+                ?: return@registerForActivityResult
+            val data = Bitmap.createScaledBitmap(bitmap, bitmap.width, bitmap.height, false).copy(
+                Bitmap.Config.ARGB_8888, true
             )
-        )
-    }
+            viewModel.event(
+                ModifyContract.Event.OnUpdateImage(
+                    compressBitmap(Bitmap.CompressFormat.PNG, data, 100) ?: Uri.EMPTY
+                )
+            )
+        }
 
     private val pickMultipleMedia = registerForActivityResult(
         ActivityResultContracts.PickVisualMedia()
     ) { uri ->
 
-            if (uri != null) {
-                viewModel.event(
-                    ModifyContract.Event.OnUpdateImage(
-                        uri
-                    )
+        if (uri != null) {
+            viewModel.event(
+                ModifyContract.Event.OnUpdateImage(
+                    uri
                 )
-            }
+            )
         }
+    }
 
 
     override val backFrame: FrameLayout by lazy { binding.frameBack }
@@ -81,23 +83,31 @@ class ModifyActivity : BackFrameActivity<ActivityModifyBinding>(ActivityModifyBi
             viewModel.event(ModifyContract.Event.OnClickTime(binding.tvTime.text.toString()))
         }
         binding.tvSave.setOnClickListener {
-            viewModel.event(ModifyContract.Event.OnSavedFeed(
-                fileName = viewModel.state.value.image.toString(),
-                tag = viewModel.state.value.tag,
-                time = viewModel.state.value.date,
-                memo = viewModel.state.value.memo,
-                icon = viewModel.state.value.icon,
-                isMainFeed = viewModel.state.value.isMainPost
-            ))
+            viewModel.event(
+                ModifyContract.Event.OnSavedFeed(
+                    fileName = viewModel.state.value.image.toString(),
+                    tag = viewModel.state.value.tag,
+                    time = viewModel.state.value.date,
+                    memo = viewModel.state.value.memo,
+                    icon = viewModel.state.value.icon,
+                    isMainFeed = viewModel.state.value.isMainPost
+                )
+            )
         }
 
         binding.radioTag.setOnCheckedChangeListener { radioGroup, i ->
-            viewModel.event(ModifyContract.Event.OnClickDay(radioGroup[i].tag as String))
+            getTagByViewId(i)?.code?.let {
+                viewModel.event(ModifyContract.Event.OnClickDay(it))
+            }
         }
 
         binding.radioMealType.setOnCheckedChangeListener { radioGroup, i ->
-            viewModel.event(ModifyContract.Event.OnClickIcon(radioGroup[i].tag as String))
+            getIconByViewId(i)?.code?.let {
+                viewModel.event(ModifyContract.Event.OnClickIcon(it))
+            }
         }
+
+        viewModel.getFeedInfo()
     }
 
     override fun onClickBackFrameIcon() {
@@ -108,7 +118,7 @@ class ModifyActivity : BackFrameActivity<ActivityModifyBinding>(ActivityModifyBi
         viewModel.state
             .flowWithLifecycle(lifecycle, Lifecycle.State.CREATED)
             .onEach { state ->
-                if(state.id.isEmpty()) {
+                if (state.id.isEmpty()) {
                     val now = DateTime.now()
                     binding.tvDate.text = now.toString(DATE_PATTERNS)
                     binding.tvTime.text = now.toString(TIME_PATTERNS)
@@ -117,7 +127,7 @@ class ModifyActivity : BackFrameActivity<ActivityModifyBinding>(ActivityModifyBi
                     binding.tvTime.text = DateTime.parse(state.time).toString(TIME_PATTERNS)
                 }
 
-                if(state.image != Uri.EMPTY) {
+                if (state.image != Uri.EMPTY) {
                     Glide.with(this)
                         .load(state.image)
                         .centerCrop()
@@ -132,8 +142,19 @@ class ModifyActivity : BackFrameActivity<ActivityModifyBinding>(ActivityModifyBi
             .flowWithLifecycle(lifecycle, Lifecycle.State.CREATED)
             .onEach { sideEffect ->
                 when (sideEffect) {
+
+                    ModifyContract.SideEffect.OnFinishCreate -> {
+                        setResult(RESULT_CODE_CREATE)
+                        finish()
+                    }
+
                     ModifyContract.SideEffect.OnFinishModify -> {
-                        setResult(Activity.RESULT_OK)
+                        setResult(RESULT_CODE_MODIFY)
+                        finish()
+                    }
+
+                    ModifyContract.SideEffect.OnFinishDelete -> {
+                        setResult(RESULT_CODE_DELETE)
                         finish()
                     }
 
@@ -149,11 +170,12 @@ class ModifyActivity : BackFrameActivity<ActivityModifyBinding>(ActivityModifyBi
                     }
 
                     ModifyContract.SideEffect.RequestAlbum -> {
-                        val permissions = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                            Manifest.permission.READ_MEDIA_IMAGES
-                        } else {
-                            Manifest.permission.READ_EXTERNAL_STORAGE
-                        }
+                        val permissions =
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                                Manifest.permission.READ_MEDIA_IMAGES
+                            } else {
+                                Manifest.permission.READ_EXTERNAL_STORAGE
+                            }
 
                         requestPermissions(
                             listOf(permissions).toTypedArray(),
@@ -171,15 +193,23 @@ class ModifyActivity : BackFrameActivity<ActivityModifyBinding>(ActivityModifyBi
                     }
 
                     is ModifyContract.SideEffect.ShowDatePicker -> {
-                        val date = DateTime.parse(sideEffect.date, DateTimeFormat.forPattern(DATE_PATTERNS))
+                        val date = DateTime.parse(
+                            sideEffect.date,
+                            DateTimeFormat.forPattern(DATE_PATTERNS)
+                        )
 
-                        ModifyDateTimePicker.getInstance(date.toString()).show(supportFragmentManager, Keys.MODIFY_DATE_FRAGMENT)
+                        ModifyDateTimePicker.getInstance(date.toString())
+                            .show(supportFragmentManager, Keys.MODIFY_DATE_FRAGMENT)
                     }
 
                     is ModifyContract.SideEffect.ShowTimePicker -> {
-                        val time = DateTime.parse(sideEffect.time, DateTimeFormat.forPattern(TIME_PATTERNS))
+                        val time = DateTime.parse(
+                            sideEffect.time,
+                            DateTimeFormat.forPattern(TIME_PATTERNS)
+                        )
 
-                        ModifyTimePicker.getInstance(time.toString()).show(supportFragmentManager, Keys.MODIFY_TIME_FRAGMENT)
+                        ModifyTimePicker.getInstance(time.toString())
+                            .show(supportFragmentManager, Keys.MODIFY_TIME_FRAGMENT)
                     }
 
                     else -> Unit
@@ -191,16 +221,24 @@ class ModifyActivity : BackFrameActivity<ActivityModifyBinding>(ActivityModifyBi
     }
 
     private fun pickerDialogResult() {
-        supportFragmentManager.setFragmentResultListener(Keys.MODIFY_DATE_FRAGMENT, this) { _, bundle ->
+        supportFragmentManager.setFragmentResultListener(
+            Keys.MODIFY_DATE_FRAGMENT,
+            this
+        ) { _, bundle ->
             val data = bundle.getSerializable(Keys.MODIFY_DATE_RESULT) as PickerData.Date
 
-            binding.tvDate.text = DateTime.parse("${data.year}-${data.month}-${data.day}").toString(DATE_PATTERNS)
+            binding.tvDate.text =
+                DateTime.parse("${data.year}-${data.month}-${data.day}").toString(DATE_PATTERNS)
         }
 
-        supportFragmentManager.setFragmentResultListener(Keys.MODIFY_TIME_FRAGMENT, this) { _, bundle ->
+        supportFragmentManager.setFragmentResultListener(
+            Keys.MODIFY_TIME_FRAGMENT,
+            this
+        ) { _, bundle ->
             val data = bundle.getSerializable(Keys.MODIFY_TIME_RESULT) as PickerData.Time
 
-            binding.tvTime.text = LocalTime.parse("${data.hours}:${data.minute}").toString(TIME_PATTERNS)
+            binding.tvTime.text =
+                LocalTime.parse("${data.hours}:${data.minute}").toString(TIME_PATTERNS)
         }
     }
 
@@ -227,5 +265,37 @@ class ModifyActivity : BackFrameActivity<ActivityModifyBinding>(ActivityModifyBi
                 }
             }
         }
+    }
+
+    private fun getIconByViewId(@IdRes viewId: Int): Icon? {
+        return when (viewId) {
+            R.id.type_button_rice -> Icon.RICE
+            R.id.type_button_salad -> Icon.SALAD
+            R.id.type_button_noodle -> Icon.NOODLE
+            R.id.type_button_meat -> Icon.MEAT
+            R.id.type_button_bread -> Icon.BREAD
+            R.id.type_button_burger -> Icon.FAST_FOOD
+            R.id.type_button_sushi -> Icon.SUSHI
+            R.id.type_button_snack -> Icon.CAKE
+            R.id.type_button_nothing -> Icon.NOTHING
+            else -> null
+        }
+    }
+
+
+    private fun getTagByViewId(@IdRes viewId: Int): Tag? {
+        return when (viewId) {
+            R.id.tag_button_morning -> Tag.MORNING
+            R.id.tag_button_lunch -> Tag.LUNCH
+            R.id.tag_button_evening -> Tag.DINNER
+            R.id.tag_button_snack -> Tag.SNACK
+            else -> null
+        }
+    }
+
+    companion object {
+        const val RESULT_CODE_CREATE = 10
+        const val RESULT_CODE_MODIFY = 11
+        const val RESULT_CODE_DELETE = 12
     }
 }

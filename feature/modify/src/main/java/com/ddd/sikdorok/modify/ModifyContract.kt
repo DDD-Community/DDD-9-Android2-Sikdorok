@@ -50,7 +50,11 @@ class ModifyContract {
     }
 
     sealed class SideEffect {
+        object OnFinishCreate : SideEffect()
+
         object OnFinishModify : SideEffect()
+
+        object OnFinishDelete : SideEffect()
 
         object RequestPermission : SideEffect()
 
