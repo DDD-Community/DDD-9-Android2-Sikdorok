@@ -139,12 +139,15 @@ class ModifyViewModel @Inject constructor(
                 readFeedUseCase(postId).data?.let { response ->
                     _state.update {
                         it.copy(
-
-
+                            imageUrl = response.feedInfo.photosInfoList?.firstOrNull()?.uploadFullPath,
+                            icon = response.feedInfo.icon,
+                            tag = response.feedInfo.tag,
+                            memo = response.feedInfo.memo ?: "",
+                            isMainPost = response.feedInfo.isMain,
+                            time = response.feedInfo.time,
+                            id = response.feedInfo.feedId
                         )
                     }
-
-
                 }
             }
         }

@@ -127,7 +127,7 @@ class HomeActivity : BaseActivity<ActivityHomeBinding>(ActivityHomeBinding::infl
         showSnackBar(
             view = binding.root,
             message = text,
-            backgroundColor = R.color.input_error,
+            backgroundColor = R.color.input_complete,
             textColor = R.color.white,
             duration = Snackbar.LENGTH_LONG
         )

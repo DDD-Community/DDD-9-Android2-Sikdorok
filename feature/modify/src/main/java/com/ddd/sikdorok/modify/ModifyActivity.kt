@@ -18,6 +18,7 @@ import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.ddd.sikdorok.core_ui.base.BackFrameActivity
+import com.ddd.sikdorok.core_ui.util.DateUtil
 import com.ddd.sikdorok.extensions.compressBitmap
 import com.ddd.sikdorok.modify.databinding.ActivityModifyBinding
 import com.ddd.sikdorok.shared.code.Icon
@@ -70,8 +71,13 @@ class ModifyActivity : BackFrameActivity<ActivityModifyBinding>(ActivityModifyBi
     override val viewModel: ModifyViewModel by viewModels()
 
     override fun initLayout() {
-        window.statusBarColor = getColor(com.ddd.sikdorok.core_design.R.color.white)
 
+        bind {
+            vm = viewModel
+            lifecycleOwner = this@ModifyActivity
+        }
+
+        window.statusBarColor = getColor(com.ddd.sikdorok.core_design.R.color.white)
 
         binding.fabCamera.setOnClickListener {
             viewModel.event(ModifyContract.Event.OnClickCameraFAB)
@@ -108,6 +114,8 @@ class ModifyActivity : BackFrameActivity<ActivityModifyBinding>(ActivityModifyBi
         }
 
         viewModel.getFeedInfo()
+
+        setResult(10)
     }
 
     override fun onClickBackFrameIcon() {
@@ -118,13 +126,13 @@ class ModifyActivity : BackFrameActivity<ActivityModifyBinding>(ActivityModifyBi
         viewModel.state
             .flowWithLifecycle(lifecycle, Lifecycle.State.CREATED)
             .onEach { state ->
-                if (state.id.isEmpty()) {
-                    val now = DateTime.now()
+                if (state.id.isNotEmpty()) {
+                    val now = DateTime.parse(state.time, DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss"))
                     binding.tvDate.text = now.toString(DATE_PATTERNS)
                     binding.tvTime.text = now.toString(TIME_PATTERNS)
                 } else {
-                    binding.tvDate.text = DateTime.parse(state.date).toString(DATE_PATTERNS)
-                    binding.tvTime.text = DateTime.parse(state.time).toString(TIME_PATTERNS)
+                    binding.tvDate.text = DateTime.now().toString(DATE_PATTERNS)
+                    binding.tvTime.text = DateTime.now().toString(TIME_PATTERNS)
                 }
 
                 if (state.image != Uri.EMPTY) {
@@ -134,7 +142,20 @@ class ModifyActivity : BackFrameActivity<ActivityModifyBinding>(ActivityModifyBi
                         .into(binding.ivMain)
                 }
 
+                state.imageUrl?.takeIf { it.isNotEmpty() }?.let {
+                    Glide.with(this)
+                        .load(state.imageUrl)
+                        .into(binding.ivMain)
+                }
+
+
+                binding.editInput.setText(state.memo)
+
                 binding.ivDefaultAdd.isVisible = state.image == Uri.EMPTY
+                binding.checkMainPost.isChecked = state.isMainPost
+
+                getViewIdByIcon(state.tag)?.let { binding.radioTag.check(it) }
+                getViewIdByTag(state.icon)?.let { binding.radioMealType.check(it) }
             }
             .launchIn(lifecycleScope)
 
@@ -142,33 +163,27 @@ class ModifyActivity : BackFrameActivity<ActivityModifyBinding>(ActivityModifyBi
             .flowWithLifecycle(lifecycle, Lifecycle.State.CREATED)
             .onEach { sideEffect ->
                 when (sideEffect) {
-
                     ModifyContract.SideEffect.OnFinishCreate -> {
                         setResult(RESULT_CODE_CREATE)
                         finish()
                     }
-
                     ModifyContract.SideEffect.OnFinishModify -> {
                         setResult(RESULT_CODE_MODIFY)
                         finish()
                     }
-
                     ModifyContract.SideEffect.OnFinishDelete -> {
                         setResult(RESULT_CODE_DELETE)
                         finish()
                     }
-
                     ModifyContract.SideEffect.ShowPostDialog -> {
                         PostDialog.show(supportFragmentManager, "")
                     }
-
                     ModifyContract.SideEffect.RequestCamera -> {
                         requestPermissions(
                             listOf(Manifest.permission.CAMERA).toTypedArray(),
                             camera
                         )
                     }
-
                     ModifyContract.SideEffect.RequestAlbum -> {
                         val permissions =
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -182,16 +197,13 @@ class ModifyActivity : BackFrameActivity<ActivityModifyBinding>(ActivityModifyBi
                             album
                         )
                     }
-
                     ModifyContract.SideEffect.NaviToCamera -> {
                         val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
                         cameraLauncher.launch(intent)
                     }
-
                     ModifyContract.SideEffect.NaviToAlbum -> {
                         pickMultipleMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
                     }
-
                     is ModifyContract.SideEffect.ShowDatePicker -> {
                         val date = DateTime.parse(
                             sideEffect.date,
@@ -211,7 +223,6 @@ class ModifyActivity : BackFrameActivity<ActivityModifyBinding>(ActivityModifyBi
                         ModifyTimePicker.getInstance(time.toString())
                             .show(supportFragmentManager, Keys.MODIFY_TIME_FRAGMENT)
                     }
-
                     else -> Unit
                 }
             }
@@ -267,6 +278,33 @@ class ModifyActivity : BackFrameActivity<ActivityModifyBinding>(ActivityModifyBi
         }
     }
 
+    @IdRes
+    private fun getViewIdByTag(iconCode : String): Int? {
+        return when (iconCode) {
+             Icon.RICE.code -> R.id.type_button_rice
+             Icon.SALAD.code -> R.id.type_button_salad
+             Icon.NOODLE.code -> R.id.type_button_noodle
+             Icon.MEAT.code -> R.id.type_button_meat
+             Icon.BREAD.code  -> R.id.type_button_bread
+             Icon.FAST_FOOD.code  -> R.id.type_button_burger
+             Icon.SUSHI.code  -> R.id.type_button_sushi
+             Icon.CAKE.code  -> R.id.type_button_snack
+             Icon.NOTHING.code  -> R.id.type_button_nothing
+            else -> null
+        }
+    }
+
+    @IdRes
+    private fun getViewIdByIcon(tagCode: String?): Int? {
+        return when (tagCode) {
+             Tag.MORNING.code -> R.id.tag_button_morning
+             Tag.LUNCH.code -> R.id.tag_button_lunch
+             Tag.DINNER.code -> R.id.tag_button_evening
+             Tag.SNACK.code-> R.id.tag_button_snack
+            else -> null
+        }
+    }
+
     private fun getIconByViewId(@IdRes viewId: Int): Icon? {
         return when (viewId) {
             R.id.type_button_rice -> Icon.RICE
@@ -294,8 +332,8 @@ class ModifyActivity : BackFrameActivity<ActivityModifyBinding>(ActivityModifyBi
     }
 
     companion object {
-        const val RESULT_CODE_CREATE = 10
-        const val RESULT_CODE_MODIFY = 11
-        const val RESULT_CODE_DELETE = 12
+        const val RESULT_CODE_CREATE = 3000
+        const val RESULT_CODE_MODIFY = 3001
+        const val RESULT_CODE_DELETE = 3002
     }
 }
